@@ -1,20 +1,11 @@
 import logging
 
-from flask import render_template, app
-from flask.views import View, MethodView
-import _keenthemes.templatetags.theme
-from _keenthemes.settings import settings
-from _keenthemes.__init__ import KTLayout
-from _keenthemes.libs.theme import KTTheme
-
 from starterkit import app
 
 from document.parsers import parse_document
-from document.parsers.electoral_back import parse_electoral_back_info
-
+from document.parsers.electoral_recto import parse_electoral_back_info
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 import pytesseract
 # Si nécessaire :
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
@@ -39,26 +30,27 @@ class UploadView(MethodView):
             return render_template("html/document/resultat.html", error="Aucun fichier reçu")
 
         try:
-            # 1. Convertir le PDF en images (1 image par page)
+            # 1. Convertir PDF en images
             images = convert_from_bytes(file.read())
             if not images:
-                return render_template("html/document/resultat.html", error="Impossible de lire le fichier PDF")
+                return render_template("html/document/resultat.html", error="PDF illisible")
 
-            # 2. Sauvegarder la première page pour affichage dans l'interface
+            # 2. Sauvegarder la première page comme aperçu
             first_image_filename = f"{uuid.uuid4().hex}.png"
             first_image_path = os.path.join(UPLOAD_FOLDER, first_image_filename)
             images[0].save(first_image_path, "PNG")
 
-            # 3. OCR des pages (recto = page 0, verso = page 1 si disponible)
+            # 3. OCR : recto = page 0, verso = page 1 si présent
             recto_text = pytesseract.image_to_string(images[0], lang='eng+fra')
             verso_text = pytesseract.image_to_string(images[1], lang='eng+fra') if len(images) > 1 else ""
 
-            # 4. Parser les deux faces
-            info_recto = parse_document(recto_text, doc_type="electoral")
-            info_verso = parse_document(verso_text, doc_type="electoral_back")
-            print("Données extraites du verso :", info_verso)
+            # 4. Analyse du texte (parse)
+            info_recto = parse_document(recto_text, doc_type="electoral_recto")
+            info_verso = parse_document(verso_text, doc_type="electoral_verso")
+            print(" Données extraites du recto :", info_recto)
+            print(" Données extraites du verso :", info_verso)
 
-            # 5. Extraction de la photo du recto
+            # 5. Extraction du visage
             portrait_url = None
             face_image = extract_photo_from_image(images[0])
             if face_image:
@@ -70,20 +62,19 @@ class UploadView(MethodView):
             else:
                 print("[WARN] Aucune photo d'identité extraite du recto.")
 
-            # 6. Affichage HTML avec les résultats
+            # 6. Rendu final
             return render_template("html/document/resultat.html",
                                    filename=file.filename,
                                    message="Fichier reçu et traité avec succès",
                                    extracted_text=recto_text + "\n\n" + verso_text,
-                                   info=info_recto,
                                    info_verso=info_verso,
+                                   info_recto=info_recto,
                                    image_url_filename=first_image_filename,
                                    portrait_url=portrait_url)
 
         except Exception as e:
             print("[ERROR]", str(e))
-            return render_template("html/document/resultat.html", error=str(e))
-
+            return render_template("html/document/resultat.html", error="Erreur lors du traitement : " + str(e))
 from flask import send_from_directory
 
 @app.route('/assets/uploads/<filename>')
@@ -93,13 +84,6 @@ def uploaded_file(filename):
 # Enregistrement de la route
 upload_view = UploadView.as_view("upload_view")
 app.add_url_rule("/upload", view_func=upload_view, methods=["POST"])
-
-
-from flask import request, render_template
-from regula.facesdk.webclient import MatchImage, MatchRequest
-from regula.facesdk.webclient.ext import FaceSdk
-from regula.facesdk.webclient.gen.model.image_source import ImageSource
-import os
 
 from flask import request, render_template
 import os
