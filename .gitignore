@@ -1,0 +1,22 @@
+*.pyc
+# Ignorer tous les fichiers .pyc
+*.pyc
+
+# Ignorer les dossiers .venv
+.venv/
+starterkit/.venv/
+_assets/uploads
+uploads
+
+migrations
+
+alembic.ini
+
+config.py
+
+
+
+package.json
+
+note.txt
+

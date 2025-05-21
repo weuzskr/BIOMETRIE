@@ -1,0 +1,69 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% block title %} Licenza e limitazione all’uso dei Geoinformation Enabling ToolkIT starterkit&reg{% endblock %}
+
+{% block body %}
+  <header class="jumbotron subhead" id="overview">
+    {% blocktrans %}
+      <h1>Geoinformation Enabling ToolkIT starterkit&reg License</h1>
+      <p class="lead">Thank you for using GET-IT.</p>
+    {% endblocktrans %}
+  </header>
+
+  {% blocktrans %}
+  <p>The Geoinformation Enabling ToolkIT starterkit® - GET-IT
+      hereafter - is a software suite developed in the context of
+      RITMARE SP7_WP4_AZ2. GET-IT turns research groups into
+      autonomous, independent, and decentralised distributors of the
+      data (and metadata) they are collecting. Data and metadata are
+      provided according to standards, allowing for discovery and
+      interoperable access by spatial data infrastructures.
+  </p>
+
+  <p>GET-IT is made available according to a free and open source
+      license (GPL v3.0<sup><a href="#ref-gpl">1</a></sup>). In the framework of RITMARE, the software
+      is complementd by technical support for installation and
+      usage. In other contexts, any form of technical support requires
+      preemptive consent by the Developer Team and by the RITMARE
+      SP7_WP4_AZ2 group.
+  </p>
+
+  <p>In addition to the rules drawn by the GPL v3.0 license, usage of
+      the GET-IT suite imply attribution of the Development Team as
+      creators of the software. Users are required to credit<sup><a href="#ref-citation-repository">2</a></sup>
+      the
+      Development Team<sup><a href="#ref-citation-team">3</a></sup> in all products including features drawn from
+      the GET-IT suite. Also, the user is responsible for the
+      information and data that are made available by means of GET-IT.
+  </p>
+
+  <p>ACCORDING TO THE CONDITIONS SET BY THE LAW, THE DEVELOPERS AND
+      DISTRIBUTORS OF THE GET-IT SUITE DO NOT PROVIDE ANY WARRANTY,
+      EITHER EXPLICIT OR IMPLICIT, ON THE SERVICES PROVIDED THROUGH
+      THE SOFTWARE. THE SOFTWARE IS PROVIDED "AS-IS", WITH NO
+      WARRANTY. WE DO NOT ACKNOWLEDGE ANY WARRANTY OF MARKETABILITY,
+      OF APTITUDE FOR ANY SPECIFIC PURPOSE, AND OF
+      NON-INFRINGEMENT. ANY ISSUE REGARDING QUALITY AND PERFORMANCE OF
+      THE SOFTWARE RELAPSES ON THE USER.
+  </p>
+
+  <p>ACCORDING TO THE CONDITIONS SET BY THE LAW, THE DEVELOPERS ARE
+      NOT RESPONSIBLE FOR (A) INDIRECT, SPECIAL, ACCIDENTAL, PUNITIVE,
+      SAMPLE, AND CONSEQUENTIAL DAMAGES. THE DEVELOPERS ARE NOT
+      RESPONSIBLE FOR ANY LOSS IN ACTIVITY, DATA, AND PROFITS,
+      INDEPENDENTLY OF THE LEGAL THEORY AND INDEPENDENTLY OF ANY
+      AWARENESS BY THE DEVELOPERS ON THE POSSIBILITY OF SUCH DAMAGES,
+      EVEN IF ANY REMEDIES DO NOT MEET THEIR ESSENTIAL AIMS; (B)
+      DIRECT RESPONSIBILITY FOR ANY COMPLAINT ON THE SERVICES PROVIDED.
+  </p>
+  {% endblocktrans %}
+  <hr>
+  <div>
+    <ol>
+      <li id="ref-gpl"><a href="http://www.gnu.org/licenses/gpl.html"> http://www.gnu.org/licenses/gpl.html</a></li>
+      <li id="ref-citation-repository"><a href="http://sp7.irea.cnr.it/wiki/index.php/SK_Citation_Repository">http://sp7.irea.cnr.it/wiki/index.php/SK_Citation_Repository</a></li>
+      <li id="ref-citation-team"><a href="http://sp7.irea.cnr.it/wiki/index.php/SK_Citation_Repository#Development_Team">http://sp7.irea.cnr.it/wiki/index.php/SK_Citation_Repository#Development_Team</a></li>
+    </ol>
+  </div>
+{% endblock %}
