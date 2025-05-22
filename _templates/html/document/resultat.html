@@ -57,15 +57,24 @@
 </div>
 {% endif %}
 
-
 {% if portrait_url %}
 <div class="section">
     <h2>Comparer la photo capturée avec la photo extraite du document</h2>
+
     <form action="{{ url_for('compare_faces') }}" method="POST" enctype="multipart/form-data">
         <div>
             <label for="uploaded_photo">Photo capturée :</label><br>
-            <input type="file" name="uploaded_photo" accept="image/*" required>
+            <input type="file" name="uploaded_photo" id="uploaded_photo" accept="image/*" onchange="previewImage()" required>
         </div>
+
+        <!-- Aperçu de la photo capturée -->
+        <div style="margin-top: 10px;">
+            <img id="preview" src="#" alt="Aperçu photo" style="display:none; max-height: 200px;">
+        </div>
+
+        <!-- Aperçu de la photo extraite du document -->
+
+
         <input type="hidden" name="portrait_url" value="{{ portrait_url }}">
         <div style="margin-top: 15px;">
             <button type="submit">Lancer la comparaison</button>
@@ -73,6 +82,25 @@
     </form>
 </div>
 {% endif %}
+
+
+  <script>
+function previewImage() {
+    const fileInput = document.getElementById('uploaded_photo');
+    const preview = document.getElementById('preview');
+
+    const file = fileInput.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+    }
+}
+</script>
+
 
 
 

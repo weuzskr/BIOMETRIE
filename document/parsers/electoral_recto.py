@@ -68,7 +68,20 @@ def parse_electoral_recto_info(raw_text):
                 data['centre_enregistrement'] = lines[idx + 1]
 
         # Adresse
-        elif 'gadafaro' in lower_line or re.search(r'\d+\s+à\s+\d+', lower_line):
-            data['adresse'] = line
+        # Adresse
+        adresse_detectee = False
+
+        for i, line in enumerate(lines):
+            lower_line = line.lower().strip()
+
+            # Étape 1 : repérer la ligne qui annonce le champ
+            if 'adresse du domicile' in lower_line or re.search(r'adresse\s+du\s+donmcile', lower_line):
+                adresse_detectee = True
+                continue
+
+            # Étape 2 : si le champ a été détecté, stocker la ligne suivante non vide
+            if adresse_detectee and line.strip():
+                data['adresse'] = line.strip()
+                adresse_detectee = False  # Réinitialiser le flag
 
     return data

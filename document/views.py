@@ -23,19 +23,23 @@ os.makedirs(PORTRAIT_FOLDER, exist_ok=True)
 
 from utils.photo_extractor.extractor import extract_photo_from_image
 
+from flask import session, redirect, url_for
+
 class UploadView(MethodView):
     def post(self):
         file = request.files.get('pdf_file')
         if not file:
-            return render_template("html/document/resultat.html", error="Aucun fichier reçu")
+            session['upload_result'] = {'error': "Aucun fichier reçu"}
+            return redirect(url_for('upload_result'))
 
         try:
             # 1. Convertir PDF en images
             images = convert_from_bytes(file.read())
             if not images:
-                return render_template("html/document/resultat.html", error="PDF illisible")
+                session['upload_result'] = {'error': "PDF illisible"}
+                return redirect(url_for('upload_result'))
 
-            # 2. Sauvegarde de la première page (pour affichage)
+            # 2. Sauvegarde de la première page
             first_image_filename = f"{uuid.uuid4().hex}.png"
             first_image_path = os.path.join(UPLOAD_FOLDER, first_image_filename)
             images[0].save(first_image_path, "PNG")
@@ -43,22 +47,18 @@ class UploadView(MethodView):
             # 3. OCR sur toutes les pages
             extracted_texts = [pytesseract.image_to_string(img, lang='eng+fra') for img in images]
 
-            # 4. Analyse (parser auto pour chaque page)
+            # 4. Analyse
             info_recto = {}
             info_verso = {}
 
             for text in extracted_texts:
-                parsed = parse_document(text)  # Appelle `parse_document(raw_text, doc_type=None)`
-                # On trie dans recto ou verso selon les clés détectées
+                parsed = parse_document(text)
                 if any(k in parsed for k in ['date_naissance', 'sexe', 'taille']):
                     info_recto.update(parsed)
                 elif any(k in parsed for k in ['numero_electeur', 'lieu_vote', 'commune']):
                     info_verso.update(parsed)
 
-            print("[DEBUG] Recto :", info_recto)
-            print("[DEBUG] Verso :", info_verso)
-
-            # 5. Extraction du visage depuis la première page (supposée être le recto)
+            # 5. Extraction du visage
             portrait_url = None
             face_image = extract_photo_from_image(images[0])
             if face_image:
@@ -70,19 +70,23 @@ class UploadView(MethodView):
             else:
                 print("[WARN] Aucune photo de visage extraite.")
 
-            # 6. Rendu
-            return render_template("html/document/resultat.html",
-                                   filename=file.filename,
-                                   message="Fichier reçu et traité avec succès",
-                                   extracted_text="\n\n".join(extracted_texts),
-                                   info_verso=info_verso,
-                                   info_recto=info_recto,
-                                   image_url_filename=first_image_filename,
-                                   portrait_url=portrait_url)
+            # 6. Stockage temporaire dans session
+            session['upload_result'] = {
+                'filename': file.filename,
+                'message': "Fichier reçu et traité avec succès",
+                'extracted_text': "\n\n".join(extracted_texts),
+                'info_recto': info_recto,
+                'info_verso': info_verso,
+                'image_url_filename': first_image_filename,
+                'portrait_url': portrait_url
+            }
+
+            return redirect(url_for('upload_result'))
 
         except Exception as e:
             print("[ERROR]", str(e))
-            return render_template("html/document/resultat.html", error="Erreur lors du traitement : " + str(e))
+            session['upload_result'] = {'error': "Erreur lors du traitement : " + str(e)}
+            return redirect(url_for('upload_result'))
 
 
 from flask import send_from_directory
@@ -119,12 +123,31 @@ from flask import current_app
 #from utils.image_processing import prepare_image_for_recognition
 from utils.photo_extractor.image_processing import prepare_image_for_recognition
 
+from flask import request, render_template, current_app
+from werkzeug.datastructures import FileStorage
+import os
+import face_recognition
+
+  # à adapter selon ton projet
+
+def prepare_image_for_recognition(file):
+    try:
+        image = face_recognition.load_image_file(file)
+        current_app.logger.info(f"Image chargée. Dimensions : {image.shape}")
+        return image
+    except Exception as e:
+        current_app.logger.error(f"Erreur lors du chargement de l'image : {e}")
+        return None
+
+from flask import session, redirect, url_for
+
 @app.route('/compare-faces', methods=['POST'])
 def compare_faces():
     uploaded_file = request.files.get('uploaded_photo')
     portrait_url = request.form.get('portrait_url')
 
     if not uploaded_file or not portrait_url:
+        current_app.logger.warning("Fichier uploadé ou portrait manquant.")
         return "Images manquantes", 400
 
     try:
@@ -132,21 +155,38 @@ def compare_faces():
         doc_photo_path = os.path.join(current_app.root_path, UPLOAD_FOLDER, filename)
 
         if not os.path.exists(doc_photo_path):
+            current_app.logger.error(f"Fichier introuvable : {doc_photo_path}")
             return f"Fichier introuvable : {doc_photo_path}", 404
 
-        # Préparer images pour reconnaissance
-        uploaded_img = prepare_image_for_recognition(uploaded_file)
+        current_app.logger.info(f"Fichier document trouvé : {doc_photo_path}")
 
-        from werkzeug.datastructures import FileStorage
+        uploaded_img = prepare_image_for_recognition(uploaded_file)
         with open(doc_photo_path, "rb") as f:
             doc_file = FileStorage(stream=f, filename=filename)
             document_img = prepare_image_for_recognition(doc_file)
 
-        uploaded_encodings = face_recognition.face_encodings(uploaded_img)
-        document_encodings = face_recognition.face_encodings(document_img)
+        if uploaded_img is None or document_img is None:
+            current_app.logger.error("Échec du chargement des images.")
+            return "Erreur lors du chargement des images", 500
+
+        uploaded_locations = face_recognition.face_locations(uploaded_img)
+        document_locations = face_recognition.face_locations(document_img)
+
+        current_app.logger.info(f"Visages détectés - photo uploadée : {len(uploaded_locations)}")
+        current_app.logger.info(f"Visages détectés - document : {len(document_locations)}")
+        current_app.logger.debug(f"Emplacements upload : {uploaded_locations}")
+        current_app.logger.debug(f"Emplacements document : {document_locations}")
+
+        if not uploaded_locations or not document_locations:
+            current_app.logger.warning("Aucun visage détecté dans l'une des images.")
+            return "Aucun visage détecté dans l'une des images", 400
+
+        uploaded_encodings = face_recognition.face_encodings(uploaded_img, known_face_locations=uploaded_locations)
+        document_encodings = face_recognition.face_encodings(document_img, known_face_locations=document_locations)
 
         if not uploaded_encodings or not document_encodings:
-            return "Aucun visage détecté dans l'une des images", 400
+            current_app.logger.warning("Échec lors de l'encodage des visages.")
+            return "Impossible de générer les encodages de visage", 400
 
         uploaded_encoding = uploaded_encodings[0]
         document_encoding = document_encodings[0]
@@ -155,7 +195,31 @@ def compare_faces():
         distance = face_recognition.face_distance([document_encoding], uploaded_encoding)[0]
         similarity = (1 - distance) * 100
 
-        return render_template("html/document/comparison_result.html", similarity=round(similarity, 2), match=results[0])
+        current_app.logger.info(f"Comparaison effectuée - Similarité : {similarity:.2f}%, Correspondance : {results[0]}")
+
+        # Stocker les résultats dans la session
+        session['face_result'] = {
+            'similarity': round(similarity, 2),
+            'match': str(results[0])  # ✅ bool → str
+        }
+        return redirect(url_for('show_face_result'))
 
     except Exception as e:
+        current_app.logger.exception(f"Erreur pendant la comparaison : {e}")
         return f"Erreur pendant la comparaison : {e}", 500
+
+
+@app.route('/compare-faces-result')
+def show_face_result():
+    result = session.get('face_result')
+    if not result:
+        return "Aucun résultat à afficher", 400
+    return render_template("html/document/comparison_result.html", **result)
+
+
+@app.route('/upload-result')
+def upload_result():
+    result = session.get('upload_result')
+    if not result:
+        return render_template("html/document/resultat.html", error="Aucun résultat disponible")
+    return render_template("html/document/resultat.html", **result)
