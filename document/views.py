@@ -3,7 +3,7 @@ import logging
 from starterkit import app
 
 from document.parsers import parse_document
-from document.parsers.electoral_recto import parse_electoral_back_info
+from document.parsers.electoral_recto import parse_electoral_recto_info
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 import pytesseract
@@ -35,22 +35,30 @@ class UploadView(MethodView):
             if not images:
                 return render_template("html/document/resultat.html", error="PDF illisible")
 
-            # 2. Sauvegarder la première page comme aperçu
+            # 2. Sauvegarde de la première page (pour affichage)
             first_image_filename = f"{uuid.uuid4().hex}.png"
             first_image_path = os.path.join(UPLOAD_FOLDER, first_image_filename)
             images[0].save(first_image_path, "PNG")
 
-            # 3. OCR : recto = page 0, verso = page 1 si présent
-            recto_text = pytesseract.image_to_string(images[0], lang='eng+fra')
-            verso_text = pytesseract.image_to_string(images[1], lang='eng+fra') if len(images) > 1 else ""
+            # 3. OCR sur toutes les pages
+            extracted_texts = [pytesseract.image_to_string(img, lang='eng+fra') for img in images]
 
-            # 4. Analyse du texte (parse)
-            info_recto = parse_document(recto_text, doc_type="electoral_recto")
-            info_verso = parse_document(verso_text, doc_type="electoral_verso")
-            print(" Données extraites du recto :", info_recto)
-            print(" Données extraites du verso :", info_verso)
+            # 4. Analyse (parser auto pour chaque page)
+            info_recto = {}
+            info_verso = {}
 
-            # 5. Extraction du visage
+            for text in extracted_texts:
+                parsed = parse_document(text)  # Appelle `parse_document(raw_text, doc_type=None)`
+                # On trie dans recto ou verso selon les clés détectées
+                if any(k in parsed for k in ['date_naissance', 'sexe', 'taille']):
+                    info_recto.update(parsed)
+                elif any(k in parsed for k in ['numero_electeur', 'lieu_vote', 'commune']):
+                    info_verso.update(parsed)
+
+            print("[DEBUG] Recto :", info_recto)
+            print("[DEBUG] Verso :", info_verso)
+
+            # 5. Extraction du visage depuis la première page (supposée être le recto)
             portrait_url = None
             face_image = extract_photo_from_image(images[0])
             if face_image:
@@ -60,13 +68,13 @@ class UploadView(MethodView):
                 portrait_url = face_image_filename
                 print(f"[INFO] Photo de visage extraite : {face_image_path}")
             else:
-                print("[WARN] Aucune photo d'identité extraite du recto.")
+                print("[WARN] Aucune photo de visage extraite.")
 
-            # 6. Rendu final
+            # 6. Rendu
             return render_template("html/document/resultat.html",
                                    filename=file.filename,
                                    message="Fichier reçu et traité avec succès",
-                                   extracted_text=recto_text + "\n\n" + verso_text,
+                                   extracted_text="\n\n".join(extracted_texts),
                                    info_verso=info_verso,
                                    info_recto=info_recto,
                                    image_url_filename=first_image_filename,
@@ -75,6 +83,8 @@ class UploadView(MethodView):
         except Exception as e:
             print("[ERROR]", str(e))
             return render_template("html/document/resultat.html", error="Erreur lors du traitement : " + str(e))
+
+
 from flask import send_from_directory
 
 @app.route('/assets/uploads/<filename>')
@@ -106,34 +116,34 @@ import face_recognition
 import os
 from flask import current_app
 
+#from utils.image_processing import prepare_image_for_recognition
+from utils.photo_extractor.image_processing import prepare_image_for_recognition
+
 @app.route('/compare-faces', methods=['POST'])
 def compare_faces():
     uploaded_file = request.files.get('uploaded_photo')
-    portrait_url = request.form.get('portrait_url')  # ex: "_assets/uploads/face_XXX.png"
+    portrait_url = request.form.get('portrait_url')
 
     if not uploaded_file or not portrait_url:
         return "Images manquantes", 400
 
     try:
-        # Normaliser le chemin reçu (remplacer \ par /)
-        portrait_url = portrait_url.replace("\\", "/")
-
-        # Extraire seulement le nom de fichier (ex: face_XXX.png)
         filename = os.path.basename(portrait_url)
-
-        # Construire le chemin absolu complet vers le fichier dans UPLOAD_FOLDER
         doc_photo_path = os.path.join(current_app.root_path, UPLOAD_FOLDER, filename)
 
         if not os.path.exists(doc_photo_path):
             return f"Fichier introuvable : {doc_photo_path}", 404
 
-        # Chargement des images
-        uploaded_image = face_recognition.load_image_file(uploaded_file)
-        document_image = face_recognition.load_image_file(doc_photo_path)
+        # Préparer images pour reconnaissance
+        uploaded_img = prepare_image_for_recognition(uploaded_file)
 
-        # Encodage facial
-        uploaded_encodings = face_recognition.face_encodings(uploaded_image)
-        document_encodings = face_recognition.face_encodings(document_image)
+        from werkzeug.datastructures import FileStorage
+        with open(doc_photo_path, "rb") as f:
+            doc_file = FileStorage(stream=f, filename=filename)
+            document_img = prepare_image_for_recognition(doc_file)
+
+        uploaded_encodings = face_recognition.face_encodings(uploaded_img)
+        document_encodings = face_recognition.face_encodings(document_img)
 
         if not uploaded_encodings or not document_encodings:
             return "Aucun visage détecté dans l'une des images", 400
@@ -141,7 +151,6 @@ def compare_faces():
         uploaded_encoding = uploaded_encodings[0]
         document_encoding = document_encodings[0]
 
-        # Calcul de la distance et similarité
         results = face_recognition.compare_faces([document_encoding], uploaded_encoding)
         distance = face_recognition.face_distance([document_encoding], uploaded_encoding)[0]
         similarity = (1 - distance) * 100
