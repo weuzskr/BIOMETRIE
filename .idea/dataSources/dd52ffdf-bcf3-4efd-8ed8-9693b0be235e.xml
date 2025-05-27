@@ -3,15 +3,7 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>dmy</DateStyle>
-      <Grants>1||-9223372036854775808|c|G
-1||10|c|G
-1||10|C|G
-1||10|T|G
-4||-9223372036854775808|c|G
-4||10|c|G
-4||10|C|G
-4||10|T|G</Grants>
-      <IntrospectionStateNumber>791</IntrospectionStateNumber>
+      <IntrospectionStateNumber>835</IntrospectionStateNumber>
       <ServerVersion>15.12</ServerVersion>
       <StartupTime>1747823119</StartupTime>
       <TimeZones>true ACDT
@@ -808,17 +800,17 @@ false Zulu
 13183||10|C|G
 13183||-9223372036854775808|U|G
 13183||10|U|G</Grants>
-      <IntrospectionStateNumber>791</IntrospectionStateNumber>
+      <IntrospectionStateNumber>835</IntrospectionStateNumber>
       <ObjectId>16415</ObjectId>
       <OwnerName>postgres</OwnerName>
     </database>
-    <database id="3" parent="1" name="postgres">
-      <Comment>default administrative connection database</Comment>
-      <ObjectId>5</ObjectId>
+    <database id="3" parent="1" name="java-teste">
+      <ObjectId>16398</ObjectId>
       <OwnerName>postgres</OwnerName>
     </database>
-    <database id="4" parent="1" name="java-teste">
-      <ObjectId>16398</ObjectId>
+    <database id="4" parent="1" name="postgres">
+      <Comment>default administrative connection database</Comment>
+      <ObjectId>5</ObjectId>
       <OwnerName>postgres</OwnerName>
     </database>
     <role id="5" parent="1" name="pg_checkpoint">
@@ -4230,8 +4222,8 @@ false Zulu
     <schema id="263" parent="2" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>791</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-05-23.08:12:30</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>835</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-05-26.16:20:54</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>518</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
@@ -4246,7 +4238,7 @@ false Zulu
     </sequence>
     <table id="265" parent="263" name="adresses">
       <ObjectId>16471</ObjectId>
-      <StateNumber>789</StateNumber>
+      <StateNumber>834</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
@@ -4256,56 +4248,68 @@ false Zulu
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="267" parent="263" name="informations_votes">
+    <table id="267" parent="263" name="cartes_identite">
+      <ObjectId>16509</ObjectId>
+      <StateNumber>834</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="268" parent="263" name="comparaisons_faciales">
+      <ObjectId>16565</ObjectId>
+      <StateNumber>834</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>postgres</OwnerName>
+    </table>
+    <table id="269" parent="263" name="informations_votes">
       <ObjectId>16485</ObjectId>
-      <StateNumber>789</StateNumber>
+      <StateNumber>834</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="268" parent="263" name="personnes">
+    <table id="270" parent="263" name="personnes">
       <ObjectId>16460</ObjectId>
-      <StateNumber>789</StateNumber>
+      <StateNumber>834</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="269" parent="263" name="photos">
+    <table id="271" parent="263" name="photos">
       <ObjectId>16499</ObjectId>
-      <StateNumber>790</StateNumber>
+      <StateNumber>834</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="270" parent="263" name="users">
+    <table id="272" parent="263" name="users">
       <ObjectId>16448</ObjectId>
       <StateNumber>782</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <column id="271" parent="265" name="id">
+    <column id="273" parent="265" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="272" parent="265" name="personne_id">
+    <column id="274" parent="265" name="personne_id">
       <Position>2</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="273" parent="265" name="adresse">
+    <column id="275" parent="265" name="adresse">
       <Position>3</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="274" parent="265" name="domicile">
+    <column id="276" parent="265" name="domicile">
       <Position>4</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <foreign-key id="275" parent="265" name="adresses_personne_id_fkey">
+    <foreign-key id="277" parent="265" name="adresses_personne_id_fkey">
       <ColNames>personne_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16480</ObjectId>
@@ -4313,50 +4317,50 @@ false Zulu
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>16460</RefTableId>
     </foreign-key>
-    <index id="276" parent="265" name="adresses_pkey">
+    <index id="278" parent="265" name="adresses_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16476</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>789</StateNumber>
+      <StateNumber>834</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <index id="277" parent="265" name="adresses_personne_id_key">
+    <index id="279" parent="265" name="adresses_personne_id_key">
       <ColNames>personne_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16478</ObjectId>
-      <StateNumber>789</StateNumber>
+      <StateNumber>834</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="278" parent="265" name="adresses_pkey">
+    <key id="280" parent="265" name="adresses_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16477</ObjectId>
       <Primary>1</Primary>
       <StateNumber>789</StateNumber>
       <UnderlyingIndexId>16476</UnderlyingIndexId>
     </key>
-    <key id="279" parent="265" name="adresses_personne_id_key">
+    <key id="281" parent="265" name="adresses_personne_id_key">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16479</ObjectId>
       <StateNumber>789</StateNumber>
       <UnderlyingIndexId>16478</UnderlyingIndexId>
     </key>
-    <column id="280" parent="266" name="version_num">
+    <column id="282" parent="266" name="version_num">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>770</StateNumber>
       <StoredType>varchar(32)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <index id="281" parent="266" name="alembic_version_pkc">
+    <index id="283" parent="266" name="alembic_version_pkc">
       <ColNames>version_num</ColNames>
       <ObjectId>16419</ObjectId>
       <Primary>1</Primary>
@@ -4367,68 +4371,259 @@ false Zulu
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="282" parent="266" name="alembic_version_pkc">
+    <key id="284" parent="266" name="alembic_version_pkc">
       <ObjectId>16420</ObjectId>
       <Primary>1</Primary>
       <StateNumber>770</StateNumber>
       <UnderlyingIndexId>16419</UnderlyingIndexId>
     </key>
-    <column id="283" parent="267" name="id">
+    <column id="285" parent="267" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>792</StateNumber>
+      <StoredType>varchar(36)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="286" parent="267" name="numero_carte">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>792</StateNumber>
+      <StoredType>varchar|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="287" parent="267" name="nin">
+      <Position>3</Position>
+      <StateNumber>792</StateNumber>
+      <StoredType>varchar|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="288" parent="267" name="date_delivrance">
+      <Position>4</Position>
+      <StateNumber>792</StateNumber>
+      <StoredType>date|0s</StoredType>
+      <TypeId>1082</TypeId>
+    </column>
+    <column id="289" parent="267" name="date_expiration">
+      <Position>5</Position>
+      <StateNumber>792</StateNumber>
+      <StoredType>date|0s</StoredType>
+      <TypeId>1082</TypeId>
+    </column>
+    <column id="290" parent="267" name="personne_id">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>792</StateNumber>
+      <StoredType>varchar(36)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <foreign-key id="291" parent="267" name="cartes_identite_personne_id_fkey">
+      <ColNames>personne_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16520</ObjectId>
+      <StateNumber>792</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16460</RefTableId>
+    </foreign-key>
+    <index id="292" parent="267" name="cartes_identite_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16514</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>834</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <index id="293" parent="267" name="cartes_identite_numero_carte_key">
+      <ColNames>numero_carte</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16516</ObjectId>
+      <StateNumber>834</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <index id="294" parent="267" name="cartes_identite_nin_key">
+      <ColNames>nin</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16518</ObjectId>
+      <StateNumber>834</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <key id="295" parent="267" name="cartes_identite_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16515</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>792</StateNumber>
+      <UnderlyingIndexId>16514</UnderlyingIndexId>
+    </key>
+    <key id="296" parent="267" name="cartes_identite_numero_carte_key">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16517</ObjectId>
+      <StateNumber>792</StateNumber>
+      <UnderlyingIndexId>16516</UnderlyingIndexId>
+    </key>
+    <key id="297" parent="267" name="cartes_identite_nin_key">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16519</ObjectId>
+      <StateNumber>792</StateNumber>
+      <UnderlyingIndexId>16518</UnderlyingIndexId>
+    </key>
+    <column id="298" parent="268" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>811</StateNumber>
+      <StoredType>varchar(36)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="299" parent="268" name="personne_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>811</StateNumber>
+      <StoredType>varchar(36)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="300" parent="268" name="photo_extraite_id">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>811</StateNumber>
+      <StoredType>varchar(36)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="301" parent="268" name="photo_uploadee_id">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>811</StateNumber>
+      <StoredType>varchar(36)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="302" parent="268" name="similarite">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>811</StateNumber>
+      <StoredType>double precision|0s</StoredType>
+      <TypeId>701</TypeId>
+    </column>
+    <column id="303" parent="268" name="correspondance">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>811</StateNumber>
+      <StoredType>boolean|0s</StoredType>
+      <TypeId>16</TypeId>
+    </column>
+    <column id="304" parent="268" name="date_comparaison">
+      <Position>7</Position>
+      <StateNumber>811</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <foreign-key id="305" parent="268" name="comparaisons_faciales_personne_id_fkey">
+      <ColNames>personne_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16570</ObjectId>
+      <StateNumber>811</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16460</RefTableId>
+    </foreign-key>
+    <foreign-key id="306" parent="268" name="comparaisons_faciales_photo_extraite_id_fkey">
+      <ColNames>photo_extraite_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16575</ObjectId>
+      <StateNumber>811</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16499</RefTableId>
+    </foreign-key>
+    <foreign-key id="307" parent="268" name="comparaisons_faciales_photo_uploadee_id_fkey">
+      <ColNames>photo_uploadee_id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16580</ObjectId>
+      <StateNumber>811</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16499</RefTableId>
+    </foreign-key>
+    <index id="308" parent="268" name="comparaisons_faciales_pkey">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16568</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>834</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
+      <CollationParentNames>pg_catalog</CollationParentNames>
+    </index>
+    <key id="309" parent="268" name="comparaisons_faciales_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16569</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>811</StateNumber>
+      <UnderlyingIndexId>16568</UnderlyingIndexId>
+    </key>
+    <column id="310" parent="269" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="284" parent="267" name="personne_id">
+    <column id="311" parent="269" name="personne_id">
       <Position>2</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="285" parent="267" name="lieu_vote">
+    <column id="312" parent="269" name="lieu_vote">
       <Position>3</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="286" parent="267" name="centre_enregistrement">
+    <column id="313" parent="269" name="centre_enregistrement">
       <Position>4</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="287" parent="267" name="commune">
+    <column id="314" parent="269" name="commune">
       <Position>5</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="288" parent="267" name="arrondissement">
+    <column id="315" parent="269" name="arrondissement">
       <Position>6</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="289" parent="267" name="departement">
+    <column id="316" parent="269" name="departement">
       <Position>7</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="290" parent="267" name="region">
+    <column id="317" parent="269" name="region">
       <Position>8</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="291" parent="267" name="code_document">
+    <column id="318" parent="269" name="code_document">
       <Position>9</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <foreign-key id="292" parent="267" name="informations_votes_personne_id_fkey">
+    <foreign-key id="319" parent="269" name="informations_votes_personne_id_fkey">
       <ColNames>personne_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16494</ObjectId>
@@ -4436,200 +4631,141 @@ false Zulu
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>16460</RefTableId>
     </foreign-key>
-    <index id="293" parent="267" name="informations_votes_pkey">
+    <index id="320" parent="269" name="informations_votes_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16490</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>789</StateNumber>
+      <StateNumber>834</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <index id="294" parent="267" name="informations_votes_personne_id_key">
+    <index id="321" parent="269" name="informations_votes_personne_id_key">
       <ColNames>personne_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16492</ObjectId>
-      <StateNumber>789</StateNumber>
+      <StateNumber>834</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="295" parent="267" name="informations_votes_pkey">
+    <key id="322" parent="269" name="informations_votes_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16491</ObjectId>
       <Primary>1</Primary>
       <StateNumber>789</StateNumber>
       <UnderlyingIndexId>16490</UnderlyingIndexId>
     </key>
-    <key id="296" parent="267" name="informations_votes_personne_id_key">
+    <key id="323" parent="269" name="informations_votes_personne_id_key">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16493</ObjectId>
       <StateNumber>789</StateNumber>
       <UnderlyingIndexId>16492</UnderlyingIndexId>
     </key>
-    <column id="297" parent="268" name="id">
+    <column id="324" parent="270" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="298" parent="268" name="numero_carte">
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StateNumber>789</StateNumber>
-      <StoredType>varchar|0s</StoredType>
-      <TypeId>1043</TypeId>
-    </column>
-    <column id="299" parent="268" name="nin">
-      <Position>3</Position>
-      <StateNumber>789</StateNumber>
-      <StoredType>varchar|0s</StoredType>
-      <TypeId>1043</TypeId>
-    </column>
-    <column id="300" parent="268" name="nom">
+    <column id="325" parent="270" name="nom">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="301" parent="268" name="prenom">
+    <column id="326" parent="270" name="prenom">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="302" parent="268" name="sexe">
+    <column id="327" parent="270" name="sexe">
       <Position>6</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="303" parent="268" name="taille">
+    <column id="328" parent="270" name="taille">
       <Position>7</Position>
       <StateNumber>789</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="304" parent="268" name="date_naissance">
+    <column id="329" parent="270" name="date_naissance">
       <Position>8</Position>
       <StateNumber>789</StateNumber>
       <StoredType>date|0s</StoredType>
       <TypeId>1082</TypeId>
     </column>
-    <column id="305" parent="268" name="lieu_naissance">
+    <column id="330" parent="270" name="lieu_naissance">
       <Position>9</Position>
       <StateNumber>789</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="306" parent="268" name="date_delivrance">
-      <Position>10</Position>
-      <StateNumber>789</StateNumber>
-      <StoredType>date|0s</StoredType>
-      <TypeId>1082</TypeId>
-    </column>
-    <column id="307" parent="268" name="date_expiration">
-      <Position>11</Position>
-      <StateNumber>789</StateNumber>
-      <StoredType>date|0s</StoredType>
-      <TypeId>1082</TypeId>
-    </column>
-    <index id="308" parent="268" name="personnes_pkey">
+    <index id="331" parent="270" name="personnes_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16465</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>789</StateNumber>
+      <StateNumber>834</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <index id="309" parent="268" name="personnes_numero_carte_key">
-      <ColNames>numero_carte</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>16467</ObjectId>
-      <StateNumber>789</StateNumber>
-      <Unique>1</Unique>
-      <AccessMethodId>403</AccessMethodId>
-      <CollationNames>default</CollationNames>
-      <CollationIds>100</CollationIds>
-      <CollationParentNames>pg_catalog</CollationParentNames>
-    </index>
-    <index id="310" parent="268" name="personnes_nin_key">
-      <ColNames>nin</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>16469</ObjectId>
-      <StateNumber>789</StateNumber>
-      <Unique>1</Unique>
-      <AccessMethodId>403</AccessMethodId>
-      <CollationNames>default</CollationNames>
-      <CollationIds>100</CollationIds>
-      <CollationParentNames>pg_catalog</CollationParentNames>
-    </index>
-    <key id="311" parent="268" name="personnes_pkey">
+    <key id="332" parent="270" name="personnes_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16466</ObjectId>
       <Primary>1</Primary>
       <StateNumber>789</StateNumber>
       <UnderlyingIndexId>16465</UnderlyingIndexId>
     </key>
-    <key id="312" parent="268" name="personnes_numero_carte_key">
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>16468</ObjectId>
-      <StateNumber>789</StateNumber>
-      <UnderlyingIndexId>16467</UnderlyingIndexId>
-    </key>
-    <key id="313" parent="268" name="personnes_nin_key">
-      <NameSurrogate>1</NameSurrogate>
-      <ObjectId>16470</ObjectId>
-      <StateNumber>789</StateNumber>
-      <UnderlyingIndexId>16469</UnderlyingIndexId>
-    </key>
-    <column id="314" parent="269" name="id">
+    <column id="333" parent="271" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StateNumber>790</StateNumber>
       <StoredType>varchar(36)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="315" parent="269" name="filename">
+    <column id="334" parent="271" name="filename">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>790</StateNumber>
       <StoredType>varchar(255)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="316" parent="269" name="type">
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StateNumber>790</StateNumber>
-      <StoredType>varchar(20)|0s</StoredType>
-      <TypeId>1043</TypeId>
-    </column>
-    <column id="317" parent="269" name="personne_id">
+    <column id="335" parent="271" name="personne_id">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>790</StateNumber>
       <StoredType>varchar(36)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="318" parent="269" name="date_ajout">
+    <column id="336" parent="271" name="date_ajout">
       <Position>5</Position>
       <StateNumber>790</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
-    <foreign-key id="319" parent="269" name="photos_personne_id_fkey">
+    <column id="337" parent="271" name="photo_type">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>793</StateNumber>
+      <StoredType>varchar(20)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <foreign-key id="338" parent="271" name="photos_personne_id_fkey">
       <ColNames>personne_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16504</ObjectId>
@@ -4637,26 +4773,26 @@ false Zulu
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>16460</RefTableId>
     </foreign-key>
-    <index id="320" parent="269" name="photos_pkey">
+    <index id="339" parent="271" name="photos_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16502</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>790</StateNumber>
+      <StateNumber>834</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="321" parent="269" name="photos_pkey">
+    <key id="340" parent="271" name="photos_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16503</ObjectId>
       <Primary>1</Primary>
       <StateNumber>790</StateNumber>
       <UnderlyingIndexId>16502</UnderlyingIndexId>
     </key>
-    <column id="322" parent="270" name="id">
+    <column id="341" parent="272" name="id">
       <DefaultExpression>nextval(&apos;users_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -4665,28 +4801,28 @@ false Zulu
       <SequenceId>16447</SequenceId>
       <TypeId>23</TypeId>
     </column>
-    <column id="323" parent="270" name="username">
+    <column id="342" parent="272" name="username">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>782</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="324" parent="270" name="email">
+    <column id="343" parent="272" name="email">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>782</StateNumber>
       <StoredType>varchar(150)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="325" parent="270" name="password_hash">
+    <column id="344" parent="272" name="password_hash">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>782</StateNumber>
       <StoredType>varchar(256)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <index id="326" parent="270" name="users_pkey">
+    <index id="345" parent="272" name="users_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16454</ObjectId>
@@ -4695,7 +4831,7 @@ false Zulu
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="327" parent="270" name="users_username_key">
+    <index id="346" parent="272" name="users_username_key">
       <ColNames>username</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16456</ObjectId>
@@ -4706,7 +4842,7 @@ false Zulu
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <index id="328" parent="270" name="users_email_key">
+    <index id="347" parent="272" name="users_email_key">
       <ColNames>email</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16458</ObjectId>
@@ -4717,20 +4853,20 @@ false Zulu
       <CollationIds>100</CollationIds>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
-    <key id="329" parent="270" name="users_pkey">
+    <key id="348" parent="272" name="users_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16455</ObjectId>
       <Primary>1</Primary>
       <StateNumber>782</StateNumber>
       <UnderlyingIndexId>16454</UnderlyingIndexId>
     </key>
-    <key id="330" parent="270" name="users_username_key">
+    <key id="349" parent="272" name="users_username_key">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16457</ObjectId>
       <StateNumber>782</StateNumber>
       <UnderlyingIndexId>16456</UnderlyingIndexId>
     </key>
-    <key id="331" parent="270" name="users_email_key">
+    <key id="350" parent="272" name="users_email_key">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16459</ObjectId>
       <StateNumber>782</StateNumber>

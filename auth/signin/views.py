@@ -1,19 +1,9 @@
 import logging
-
-
 from flask import render_template, request, redirect, url_for, flash, session
 from flask.views import View
 from flask_login import login_user
-from sqlalchemy import text
-from werkzeug.security import check_password_hash
-
-from _keenthemes.settings import settings
-from _keenthemes.__init__ import KTLayout
-from _keenthemes.libs.theme import KTTheme
-from model.models import User
-
-
-from starterkit.model.models import db
+from starterkit.model.models import User
+from starterkit.extensions import db
 
 
 # Configuration du logger
@@ -29,8 +19,6 @@ class AuthSigninView(View):
     template_name = 'html/auth-login-basic.html'
 
     def dispatch_request(self):
-        from starterkit.model.models import User,db
-
 
         if request.method == 'POST':
 

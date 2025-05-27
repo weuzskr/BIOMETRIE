@@ -5,9 +5,16 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
-db = SQLAlchemy()
+# Avant (à ne plus faire)
+# db = SQLAlchemy()
+
+# Après : importer l'instance partagée
+from starterkit.extensions import db
+
+
 class User(UserMixin,db.Model):
     __tablename__ = 'users'
+    __table_args__ = {'extend_existing': True}  # ← ajoute cette ligne
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
@@ -26,6 +33,7 @@ class User(UserMixin,db.Model):
 import uuid
 class Personne(db.Model):
     __tablename__ = 'personnes'
+    __table_args__ = {'extend_existing': True}  # ← ajoute cette ligne
 
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     nom = db.Column(db.String, nullable=False)
@@ -50,6 +58,7 @@ class Personne(db.Model):
 
 class CarteIdentite(db.Model):
     __tablename__ = 'cartes_identite'
+    __table_args__ = {'extend_existing': True}  # ← ajoute cette ligne
 
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     numero_carte = db.Column(db.String, unique=True, nullable=False)
@@ -64,6 +73,7 @@ class CarteIdentite(db.Model):
 
 class Adresse(db.Model):
     __tablename__ = 'adresses'
+    __table_args__ = {'extend_existing': True}  # ← ajoute cette ligne
 
     id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
     # Clé étrangère unique : chaque personne a une seule adresse
@@ -75,6 +85,7 @@ class Adresse(db.Model):
 
 class InformationVote(db.Model):
     __tablename__ = 'informations_votes'
+    __table_args__ = {'extend_existing': True}  # ← ajoute cette ligne
 
     id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
     # Clé étrangère unique : chaque personne peut avoir au plus une fiche électorale
@@ -94,6 +105,7 @@ class InformationVote(db.Model):
 
 class Photo(db.Model):
     __tablename__ = 'photos'
+    __table_args__ = {'extend_existing': True}  # ← ajoute cette ligne
 
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     filename = db.Column(db.String(255), nullable=False)  # nom du fichier image
@@ -120,3 +132,20 @@ class Photo(db.Model):
     - Personne 1 --- * Photo
         → Une personne peut avoir plusieurs photos (extraites ou uploadées).
     """
+
+
+class ComparaisonFaciale(db.Model):
+    __tablename__ = 'comparaisons_faciales'
+    __table_args__ = {'extend_existing': True}
+
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    personne_id = db.Column(db.String(36), db.ForeignKey('personnes.id'), nullable=False)
+    photo_extraite_id = db.Column(db.String(36), db.ForeignKey('photos.id'), nullable=False)
+    photo_uploadee_id = db.Column(db.String(36), db.ForeignKey('photos.id'), nullable=False)
+    similarite = db.Column(db.Float, nullable=False)
+    correspondance = db.Column(db.Boolean, nullable=False)
+    date_comparaison = db.Column(db.DateTime, default=datetime.UTC)
+
+    personne = db.relationship("Personne", backref="comparaisons_faciales")
+    photo_extraite = db.relationship("Photo", foreign_keys=[photo_extraite_id])
+    photo_uploadee = db.relationship("Photo", foreign_keys=[photo_uploadee_id])

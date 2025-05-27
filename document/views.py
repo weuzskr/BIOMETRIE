@@ -1,4 +1,5 @@
 import logging
+from fileinput import filename
 
 from starterkit import app
 
@@ -89,6 +90,9 @@ class UploadView(MethodView):
             return redirect(url_for('upload_result'))
 
 
+
+
+
 from flask import send_from_directory
 
 @app.route('/assets/uploads/<filename>')
@@ -153,12 +157,11 @@ def compare_faces():
     try:
         filename = os.path.basename(portrait_url)
         doc_photo_path = os.path.join(current_app.root_path, UPLOAD_FOLDER, filename)
+        current_app.logger.info(f"[COMPARE] Chemin complet de la photo du document : {doc_photo_path}")
 
         if not os.path.exists(doc_photo_path):
-            current_app.logger.error(f"Fichier introuvable : {doc_photo_path}")
+            current_app.logger.error(f"[COMPARE] Fichier introuvable : {doc_photo_path}")
             return f"Fichier introuvable : {doc_photo_path}", 404
-
-        current_app.logger.info(f"Fichier document trouvé : {doc_photo_path}")
 
         uploaded_img = prepare_image_for_recognition(uploaded_file)
         with open(doc_photo_path, "rb") as f:
@@ -166,26 +169,23 @@ def compare_faces():
             document_img = prepare_image_for_recognition(doc_file)
 
         if uploaded_img is None or document_img is None:
-            current_app.logger.error("Échec du chargement des images.")
+            current_app.logger.error("[COMPARE] Échec du chargement d'une ou des deux images.")
             return "Erreur lors du chargement des images", 500
 
         uploaded_locations = face_recognition.face_locations(uploaded_img)
         document_locations = face_recognition.face_locations(document_img)
-
-        current_app.logger.info(f"Visages détectés - photo uploadée : {len(uploaded_locations)}")
-        current_app.logger.info(f"Visages détectés - document : {len(document_locations)}")
-        current_app.logger.debug(f"Emplacements upload : {uploaded_locations}")
-        current_app.logger.debug(f"Emplacements document : {document_locations}")
+        current_app.logger.info(
+            f"[COMPARE] Visages détectés : uploadée={len(uploaded_locations)}, document={len(document_locations)}")
 
         if not uploaded_locations or not document_locations:
-            current_app.logger.warning("Aucun visage détecté dans l'une des images.")
+            current_app.logger.warning("[COMPARE] Aucun visage détecté dans l'une des images.")
             return "Aucun visage détecté dans l'une des images", 400
 
         uploaded_encodings = face_recognition.face_encodings(uploaded_img, known_face_locations=uploaded_locations)
         document_encodings = face_recognition.face_encodings(document_img, known_face_locations=document_locations)
 
         if not uploaded_encodings or not document_encodings:
-            current_app.logger.warning("Échec lors de l'encodage des visages.")
+            current_app.logger.warning("[COMPARE] Échec lors de l'encodage des visages.")
             return "Impossible de générer les encodages de visage", 400
 
         uploaded_encoding = uploaded_encodings[0]
@@ -195,26 +195,65 @@ def compare_faces():
         distance = face_recognition.face_distance([document_encoding], uploaded_encoding)[0]
         similarity = (1 - distance) * 100
 
-        current_app.logger.info(f"Comparaison effectuée - Similarité : {similarity:.2f}%, Correspondance : {results[0]}")
+        current_app.logger.info(f"[COMPARE] Similarité calculée : {similarity:.2f}%")
+        current_app.logger.info(f"[COMPARE] Résultat correspondance : {results[0]}")
 
-        # Stocker les résultats dans la session
+        # Persistance du résultat
+        from starterkit.model.models import ComparaisonFaciale, Photo
+
+        photo_extraite = Photo.query.filter_by(filename=filename, photo_type="extraite").first()
+        photo_uploadee = Photo.query.filter_by(filename=uploaded_file.filename, photo_type="uploadee").first()
+        current_app.logger.debug(f"[COMPARE] Photo extraite : {photo_extraite}")
+        current_app.logger.debug(f"[COMPARE] Photo uploadée : {photo_uploadee}")
+
+        if photo_extraite and photo_uploadee and photo_extraite.personne_id == photo_uploadee.personne_id:
+            comparaison = ComparaisonFaciale(
+                personne_id=photo_extraite.personne_id,
+                photo_extraite_id=photo_extraite.id,
+                photo_uploadee_id=photo_uploadee.id,
+                similarite=round(similarity, 2),
+                correspondance=results[0]
+            )
+            db.session.add(comparaison)
+            db.session.commit()
+            current_app.logger.info(f"[COMPARE] Résultat enregistré en base pour personne {photo_extraite.personne_id}")
+        else:
+            current_app.logger.warning("[COMPARE] Aucune correspondance de photos/personne pour persister le résultat.")
+
         session['face_result'] = {
             'similarity': round(similarity, 2),
-            'match': str(results[0])  # ✅ bool → str
+            'match': str(results[0])
         }
+
         return redirect(url_for('show_face_result'))
 
     except Exception as e:
-        current_app.logger.exception(f"Erreur pendant la comparaison : {e}")
+        current_app.logger.exception(f"[COMPARE] Erreur inattendue : {e}")
         return f"Erreur pendant la comparaison : {e}", 500
 
 
+""" 
 @app.route('/compare-faces-result')
 def show_face_result():
     result = session.get('face_result')
     if not result:
         return "Aucun résultat à afficher", 400
     return render_template("html/document/comparison_result.html", **result)
+"""
+
+@app.route('/compare-faces-result')
+def show_face_result():
+    result = session.get('face_result')
+    if not result:
+        return "Aucun résultat à afficher", 400
+
+    upload_data = session.get('upload_result')
+    return render_template(
+        "html/document/comparison_result.html",
+        similarity=result['similarity'],
+        match=result['match'],
+        upload_data=upload_data
+    )
 
 
 @app.route('/upload-result')
@@ -223,3 +262,35 @@ def upload_result():
     if not result:
         return render_template("html/document/resultat.html", error="Aucun résultat disponible")
     return render_template("html/document/resultat.html", **result)
+
+
+from flask import request, session, redirect, url_for, jsonify
+import json
+
+from services.enrigistrements import enregistrer_personne
+
+@app.route('/enregistrer', methods=['POST'])
+def enregistrer_personne_route():
+    try:
+        info_recto = json.loads(request.form.get('info_recto', '{}'))
+        info_verso = json.loads(request.form.get('info_verso', '{}'))
+        portrait_url = request.form.get('portrait_url')
+        original_image = request.form.get('image_url_filename')
+
+        logging.info(f"Début enregistrement - recto: {info_recto}, verso: {info_verso}, portrait: {portrait_url}, image: {original_image}")
+
+        personne_id = enregistrer_personne(info_recto, info_verso, portrait_url, original_image)
+
+        logging.info(f"Personne enregistrée avec succès : ID = {personne_id}")
+
+        return jsonify({
+            'success': True,
+            'message': f"Personne enregistrée avec ID : {personne_id}"
+        })
+
+    except Exception as e:
+        logging.exception("Erreur lors de l'enregistrement de la personne")
+        return jsonify({
+            'success': False,
+            'message': f"Erreur lors de l'enregistrement : {e}"
+        })

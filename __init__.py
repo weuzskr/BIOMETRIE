@@ -5,7 +5,8 @@ from os.path import dirname
 from sys import path
 from flask_login import LoginManager
 from flask_migrate import Migrate
-from .model.models import db, User
+from .model.models import User
+from starterkit.extensions import db
 
 path.insert(0, dirname(__file__))
 from flask import Flask, session, redirect, url_for
