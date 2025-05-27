@@ -1,6 +1,7 @@
 import logging
 from fileinput import filename
 
+from PIL import Image
 from starterkit import app
 
 from document.parsers import parse_document
@@ -28,27 +29,42 @@ from flask import session, redirect, url_for
 
 class UploadView(MethodView):
     def post(self):
-        file = request.files.get('pdf_file')
+        file = request.files.get('document')
         if not file:
             session['upload_result'] = {'error': "Aucun fichier reçu"}
             return redirect(url_for('upload_result'))
 
         try:
-            # 1. Convertir PDF en images
-            images = convert_from_bytes(file.read())
-            if not images:
-                session['upload_result'] = {'error': "PDF illisible"}
+            filename = file.filename.lower()
+            ext = os.path.splitext(filename)[1]
+
+            images = []
+
+            if ext == '.pdf':
+                # Traitement d'un PDF
+                images = convert_from_bytes(file.read())
+                if not images:
+                    session['upload_result'] = {'error': "PDF illisible"}
+                    return redirect(url_for('upload_result'))
+
+            elif ext in ['.jpg', '.jpeg', '.png']:
+                # Traitement d'une image
+                image = Image.open(file.stream).convert("RGB")
+                images = [image]
+
+            else:
+                session['upload_result'] = {'error': "Format de fichier non pris en charge"}
                 return redirect(url_for('upload_result'))
 
-            # 2. Sauvegarde de la première page
+            # Sauvegarde de la première image
             first_image_filename = f"{uuid.uuid4().hex}.png"
             first_image_path = os.path.join(UPLOAD_FOLDER, first_image_filename)
             images[0].save(first_image_path, "PNG")
 
-            # 3. OCR sur toutes les pages
+            # OCR
             extracted_texts = [pytesseract.image_to_string(img, lang='eng+fra') for img in images]
 
-            # 4. Analyse
+            # Analyse
             info_recto = {}
             info_verso = {}
 
@@ -59,7 +75,7 @@ class UploadView(MethodView):
                 elif any(k in parsed for k in ['numero_electeur', 'lieu_vote', 'commune']):
                     info_verso.update(parsed)
 
-            # 5. Extraction du visage
+            # Extraction visage
             portrait_url = None
             face_image = extract_photo_from_image(images[0])
             if face_image:
@@ -71,7 +87,7 @@ class UploadView(MethodView):
             else:
                 print("[WARN] Aucune photo de visage extraite.")
 
-            # 6. Stockage temporaire dans session
+            # Stockage dans session
             session['upload_result'] = {
                 'filename': file.filename,
                 'message': "Fichier reçu et traité avec succès",
@@ -225,21 +241,15 @@ def compare_faces():
             'match': str(results[0])
         }
 
-        return redirect(url_for('show_face_result'))
+        return redirect(url_for('upload_result'))
+
 
     except Exception as e:
         current_app.logger.exception(f"[COMPARE] Erreur inattendue : {e}")
         return f"Erreur pendant la comparaison : {e}", 500
 
 
-""" 
-@app.route('/compare-faces-result')
-def show_face_result():
-    result = session.get('face_result')
-    if not result:
-        return "Aucun résultat à afficher", 400
-    return render_template("html/document/comparison_result.html", **result)
-"""
+
 
 @app.route('/compare-faces-result')
 def show_face_result():
@@ -259,9 +269,10 @@ def show_face_result():
 @app.route('/upload-result')
 def upload_result():
     result = session.get('upload_result')
+    face_result = session.get('face_result')  # récupération du résultat de comparaison
     if not result:
         return render_template("html/document/resultat.html", error="Aucun résultat disponible")
-    return render_template("html/document/resultat.html", **result)
+    return render_template("html/document/resultat.html", **result,face_result=face_result )
 
 
 from flask import request, session, redirect, url_for, jsonify

@@ -20,8 +20,8 @@ def parse_electoral_verso_info(raw_text):
         elif 'region' in lower_line and 'departement' in lower_line and idx + 1 < len(lines):
             region_dept = lines[idx + 1].split()
             if len(region_dept) >= 2:
-                data['region'] = region_dept[0]
-                data['departement'] = region_dept[1]
+                data['région'] = region_dept[0]
+                data['département'] = region_dept[1]
 
         # Région seule (fallback)
         elif 'region' in lower_line and idx + 1 < len(lines) and 'region' not in data:
@@ -87,6 +87,6 @@ def parse_electoral_verso_info(raw_text):
         elif re.match(r'[A-Z]+<<[A-Z]+', line):
             parts = line.strip().split('<<')
             data['nom'] = parts[0].title()
-            data['prenom'] = parts[1].replace('<', ' ').title() if len(parts) > 1 else ''
+            data['prénom'] = parts[1].replace('<', ' ').title() if len(parts) > 1 else ''
 
     return data

@@ -3,13 +3,19 @@
     <form method="POST" action="/upload" enctype="multipart/form-data">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="uploadPdfModalLabel">Uploader un fichier PDF</h5>
+          <h5 class="modal-title" id="uploadPdfModalLabel">Uploader un fichier</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="pdfFile" class="form-label">Choisissez un fichier PDF</label>
-            <input class="form-control" type="file" id="pdfFile" name="pdf_file" accept="application/pdf" required>
+            <label for="pdfFile" class="form-label">Choisissez un fichier (PDF ou image)</label>
+            <input class="form-control"
+                   type="file"
+                   id="pdfFile"
+                   name="document"
+                   accept=".pdf, image/png, image/jpeg, image/jpg"
+                   required>
+            <small class="text-muted">Formats acceptés : PDF, PNG, JPG, JPEG</small>
           </div>
         </div>
         <div class="modal-footer">

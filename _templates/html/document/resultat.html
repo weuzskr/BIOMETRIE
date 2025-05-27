@@ -64,7 +64,15 @@ th {
 <body>
 
 <div class="container">
-  <h1>Résultat de l'analyse du document</h1>
+
+
+
+  <div class="border rounded p-3 my-4 text-center bg-light shadow-sm">
+  <h1 class="fs-6 text-uppercase mb-0">
+    <i class="ri-file-search-line me-2"></i> Résultat de l’analyse du document
+  </h1>
+</div>
+
 
   {% if portrait_url %}
   <div class="section">
@@ -122,7 +130,7 @@ th {
 
   <!-- Formulaire de comparaison -->
   <div class="section">
-    <h2>Comparer la photo capturée avec la photo extraite du document</h2>
+    <h2 class="fs-6 text-uppercase mb-0">Comparer la photo capturée avec la photo extraite du document</h2> </br>
 
     <form action="{{ url_for('compare_faces') }}" method="POST" enctype="multipart/form-data">
       <div class="mb-3">
@@ -143,6 +151,31 @@ th {
   </div>
 {% endif %}
 
+  {% if face_result %}
+  <div class="card shadow-sm text-center mt-5" style="max-width: 400px; margin: auto;">
+    <div class="card-body">
+      <h2 class="card-title mb-4 fs-4">Résultat de la comparaison</h2>
+      <p class="display-4 fw-bold">{{ face_result.similarity }}%</p>
+
+      {% if face_result.similarity >= 80 %}
+        <span class="badge bg-success fs-7">
+          ✅ Visages très similaires
+        </span>
+      {% elif face_result.similarity >= 60 %}
+        <span class="badge bg-warning text-dark fs-7">
+          ⚠️ Similarité moyenne, vérifier manuellement
+        </span>
+      {% else %}
+        <span class="badge bg-danger fs-7">
+          ❌ Les visages ne correspondent pas bien
+        </span>
+      {% endif %}
+    </div>
+  </div>
+
+
+{% endif %}
+
 
   <!-- Résultats OCR -->
   {% if error %}
@@ -155,22 +188,22 @@ th {
     {% endif %}
 
 
-
     <div class="section">
-      <h2>Texte OCR complet</h2>
-      <pre>{{ extracted_text }}</pre>
-    </div>
-
-    <div class="section">
-      <h2>Image de la première page</h2>
+      <h2 class="fs-6 text-uppercase mb-0">Image de la première page</h2> </br>
       {% if image_url_filename %}
-        <img src="{{ url_for('uploaded_file', filename=image_url_filename) }}" alt="Image première page" class="img-fluid" />
+        <img src="{{ url_for('uploaded_file', filename=image_url_filename) }}" alt="Image première page" class="img-fluid"
+         style="max-width: 300px; height: auto;"/>
       {% else %}
         <p>Aucune image disponible.</p>
       {% endif %}
     </div>
   {% endif %}
 </div>
+
+ <div class="section">
+      <h2 class="fs-6 text-uppercase mb-0">Texte OCR complet</h2> </br>
+      <pre>{{ extracted_text }}</pre>
+    </div>
 
 <script>
   function previewImage() {
@@ -188,6 +221,9 @@ th {
     }
   }
 </script>
+
+
+
 
 </body>
 </html>
